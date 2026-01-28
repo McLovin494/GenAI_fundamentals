@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # ZERO SHOT PROMPTING IS DIRECTLY GIVING INSTRUCTIONS TO THE MODEL
 load_dotenv()
 client = OpenAI(
-    api_key="AIzaSyBKAzXGm8leNeeFr_tT7IWkcPB4LiIa_rk",
+    api_key="your api key",
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 SYSTEM_PROMPT = "You ans only coding related queries and you do not answer anything else. If user asks anything other than coding just say sorry"

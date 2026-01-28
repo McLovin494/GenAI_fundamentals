@@ -19,10 +19,9 @@ class LLMOuputFormat(BaseModel):
 
 
 load_dotenv()
-load_dotenv()
 client = OpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    api_key="AIzaSyAfTkkCOjOg28_RtyGPm00ehXdbpL4lOUk",
+    api_key="AIzaSyBKAzXGm8leNeeFr_tT7IWkcPB4LiIa_rk",
 )
 
 
@@ -83,9 +82,10 @@ while True:
     message_history.append({"role": "user", "content": user_query})
     print("\n\n\n\n\n\n\n")
     while True:
-        response = client.chat.completions.parse(
+        # Fixed: Pass the Pydantic model class directly, not wrapped in a dict
+        response = client.beta.chat.completions.parse(
             model="gemini-2.5-flash",
-            response_format={"type": LLMOuputFormat},
+            response_format=LLMOuputFormat,
             messages=message_history,
         )
         raw_result = response.choices[0].message.content
@@ -94,11 +94,11 @@ while True:
 
         print(parsed_result)
         if parsed_result.step == "START":
-            print("🔥", parsed_result.get("content"))
+            print("🔥", parsed_result.content)
             continue
-        if parsed_result.get("step") == "TOOL":
-            tool_called = parsed_result.get("tool")
-            tool_input = parsed_result.get("input")
+        if parsed_result.step == "TOOL":
+            tool_called = parsed_result.tool
+            tool_input = parsed_result.input
             tool_response = available_tools[tool_called](tool_input)
             print(
                 f"Tool called-{tool_called} on input-{tool_input}, Result{tool_response}"
@@ -118,10 +118,10 @@ while True:
             )
             continue
         if parsed_result.step == "PLAN":
-            print("🧠 ", parsed_result.get("content"))
+            print("🧠 ", parsed_result.content)
             continue
         if parsed_result.step == "OUTPUT":
-            print("🤖 ", parsed_result.get("content"))
+            print("🤖 ", parsed_result.content)
             break
 
     print("\n\n\n\n\n\n\n")

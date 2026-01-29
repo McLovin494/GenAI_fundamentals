@@ -5,6 +5,7 @@ import json
 import requests
 from typing import Optional, List, Dict
 from pydantic import BaseModel, Field
+import os
 
 
 class LLMOuputFormat(BaseModel):
@@ -20,9 +21,14 @@ class LLMOuputFormat(BaseModel):
 
 load_dotenv()
 client = OpenAI(
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    api_key="your key here",
+    api_key="your api key",
+    base_url="your api key",
 )
+
+
+def run_command(cmd):
+    response = os.system(cmd)
+    return response
 
 
 def get_weather(city: str):
@@ -34,7 +40,7 @@ def get_weather(city: str):
         return "Something went wrong"
 
 
-available_tools = {"get_weather": get_weather}
+available_tools = {"get_weather": get_weather, "run_command": run_command}
 
 SYSTEM_PROMPT = """
 You are an expert AI assistant that follows a structured reasoning process internally.
@@ -52,6 +58,7 @@ Output JSON format:
 {"step":"START" | "PLAN"|"OUTPUT|TOOL ","content":"string":"tool":"string":"input":"string"}
 Available Tools:
 - get_weather(city:str): Takes city name as an input string and returns the weather info about the city 
+- run_command(cmd:str) Takes a system linux command as string and executes the command on user's system and returns the output from the command.You have only this tool to run linux commands
 Example 1:
 START: Hey, Can you solve 2+3*5/10
 PLAN:{"step":"PLAN":"content":"looking at the problem w should solve this using BODMAS method"}
